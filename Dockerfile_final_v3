@@ -9,10 +9,10 @@ WORKDIR /workspace
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 
 # ComfyUI Requirements installieren
-RUN pip install -r /workspace/ComfyUI/requirements.txt && \
-    pip install torchvision==0.15.2 && \
-    pip install --no-cache-dir xformers==0.0.26.post1 --extra-index-url https://download.pytorch.org/whl/cu118 && \
-    pip install jupyterlab
+RUN pip install -r /workspace/ComfyUI/requirements.txt
+RUN pip install torchvision==0.15.2
+RUN pip install --no-cache-dir xformers==0.0.26.post1 --extra-index-url https://download.pytorch.org/whl/cu118
+RUN pip install jupyterlab
 
 # Ports für ComfyUI (8188) + Jupyter (8888)
 EXPOSE 8188
