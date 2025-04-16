@@ -1,0 +1,18 @@
+FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+# Systempakete & Python vorbereiten
+RUN apt-get update && apt-get install -y git wget curl ffmpeg libgl1 libglib2.0-0 && \
+    pip install --upgrade pip
+
+# ComfyUI klonen
+WORKDIR /workspace
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
+
+# ComfyUI Requirements installieren
+RUN pip install -r /workspace/ComfyUI/requirements.txt
+
+# xFormers (für Performance)
+RUN pip install xformers==0.0.26.post1 --extra-index-url https://download.pytorch.org/whl/cu118
+
+# Start ComfyUI auf Port 8188 (für HTTP-API Zugriff via n8n)
+CMD ["python3", "/workspace/ComfyUI/main.py", "--listen", "--port", "8188", "--output-directory", "/workspace/output", "--input-directory", "/workspace/input"]
