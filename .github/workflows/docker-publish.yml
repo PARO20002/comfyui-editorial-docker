@@ -26,6 +26,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile_final_v2
+          file: ./Dockerfile_final_v3
           push: true
           tags: ghcr.io/paro20002/comfyui-editorial-docker:latest
