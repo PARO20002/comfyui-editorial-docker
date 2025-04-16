@@ -11,18 +11,15 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 # ComfyUI Requirements installieren
 RUN pip install -r /workspace/ComfyUI/requirements.txt
 
-# Torchvision (kompatibel mit Torch 2.3.0)
+# Torchvision passend zu Torch 2.3.0
 RUN pip install torchvision==0.15.2
 
-# xFormers (vorgefertigte stabile Version für Torch 2.3.0 + cu118)
-RUN pip install --no-cache-dir xformers==0.0.26.post1 --extra-index-url https://download.pytorch.org/whl/cu118
-
-# JupyterLab
+# JupyterLab für Debugging und Tests
 RUN pip install jupyterlab
 
 # Ports für ComfyUI (8188) + Jupyter (8888)
 EXPOSE 8188
 EXPOSE 8888
 
-# Start ComfyUI per Default (Jupyter manuell bei Bedarf)
+# Start ComfyUI per Default (Jupyter bei Bedarf manuell starten)
 CMD ["python3", "/workspace/ComfyUI/main.py", "--listen", "--port", "8188", "--output-directory", "/workspace/output", "--input-directory", "/workspace/input"]
