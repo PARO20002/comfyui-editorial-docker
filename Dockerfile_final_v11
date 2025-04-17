@@ -1,0 +1,39 @@
+FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+# Umgebungspfad für spätere Referenzen
+ENV COMFY_HOME=/workspace/ComfyUI
+ENV CONTROLNET_HOME=/workspace/ControlNet
+
+# Systemabhängigkeiten, Cleanup & pip-Upgrade
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      git wget curl ffmpeg libgl1 libglib2.0-0 build-essential \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip install --upgrade pip
+
+# Verzeichnisse für Ein- und Ausgabe anlegen
+RUN mkdir -p /workspace/input /workspace/output
+
+WORKDIR /workspace
+
+# ComfyUI klonen und Abhängigkeiten installieren
+RUN git clone --depth=1 https://github.com/comfyanonymous/ComfyUI.git "$COMFY_HOME" \
+ && pip install -r "$COMFY_HOME"/requirements.txt
+
+# ControlNet klonen und optional Abhängigkeiten installieren
+RUN git clone --depth=1 https://github.com/lllyasviel/ControlNet.git "$CONTROLNET_HOME" \
+ && if [ -f "$CONTROLNET_HOME"/requirements.txt ]; then pip install -r "$CONTROLNET_HOME"/requirements.txt; fi
+
+# Zusätzliche Python-Pakete (Upscaling, UI, Jupyter, etc.)
+RUN pip install \
+      torch==2.4.0 torchvision==0.15.2 torchaudio numpy opencv-python \
+      matplotlib scipy requests gradio jupyterlab realesrgan sharpness controlnet
+
+# Ports für ComfyUI und JupyterLab
+EXPOSE 8188 8888
+
+# Arbeitsverzeichnis setzen
+WORKDIR /workspace
+
+# Default-Startbefehl für ComfyUI
+CMD ["python3", "/workspace/ComfyUI/main.py", "--listen", "--port", "8188", "--output-directory", "/workspace/output", "--input-directory", "/workspace/input"]
